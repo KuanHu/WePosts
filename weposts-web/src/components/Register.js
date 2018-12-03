@@ -4,6 +4,7 @@ import {
 } from 'antd';
 import $ from 'jquery'
 import {API_ROOT} from "../constants"
+import {Link} from "react-router-dom"
 
 const FormItem = Form.Item;
 
@@ -126,6 +127,7 @@ class RegistrationForm extends React.Component {
                 </FormItem>
                 <FormItem {...tailFormItemLayout}>
                     <Button type="primary" htmlType="submit">Register</Button>
+                    <p><Link to="/login">Go back to Login</Link></p>
                 </FormItem>
             </Form>
         );
