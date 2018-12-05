@@ -48,6 +48,7 @@ export class Home extends React.Component {
         } else if(this.state.loadingPosts){
             return <Spin tip="Loading posts..."/>
         } else if(this.state.posts && this.state.posts.length > 0){
+            console.log(this.state.posts)
             const images = this.state.posts.map((post) => {
                 return {
                     user: post.user,
@@ -70,11 +71,12 @@ export class Home extends React.Component {
             url: `${API_ROOT}/search?lat=${lat}&lon=${lon}`,
             method: 'GET',
             headers: {
-                Authorization: `${AUTH_REFLIX} ${localStorage.getItem(TOKEN_KEY)}`
+                Authorization: `${AUTH_REFLIX} ${localStorage.getItem(TOKEN_KEY)}`,
             },
         }).then((res) => {
-            this.setState({ posts : [] ,loadingPosts: false, error : ''});
-            console.log();
+            // console.log(res);
+            // JSON.parse(res).map((post) => 0);
+            this.setState({ posts: res ,loadingPosts: false, error : ''});
         }, (err) => {
             this.setState({loadingPosts: false, error : err.responseText});
         }).catch((err) => {
@@ -83,7 +85,7 @@ export class Home extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({loadingGeoLocation : true});
+        this.setState({loadingGeoLocation : true, error: ''});
         this.getGeoLocation();
     }
 

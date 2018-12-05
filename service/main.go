@@ -91,10 +91,10 @@ func main() {
 		SigningMethod: jwt.SigningMethodHS256,
 	})
 
-	r.Handle("/post", jwtMiddleware.Handler(http.HandlerFunc(handlerPost))).Methods("POST")
-	r.Handle("/search", jwtMiddleware.Handler(http.HandlerFunc(handlerSearch))).Methods("GET")
-	r.Handle("/login", http.HandlerFunc(loginHandler)).Methods("POST")
-	r.Handle("/signup", http.HandlerFunc(signupHandler)).Methods("POST")
+	r.Handle("/post", jwtMiddleware.Handler(http.HandlerFunc(handlerPost)))
+	r.Handle("/search", jwtMiddleware.Handler(http.HandlerFunc(handlerSearch)))
+	r.Handle("/login", http.HandlerFunc(loginHandler))
+	r.Handle("/signup", http.HandlerFunc(signupHandler))
 
 	http.Handle("/", r)
 	log.Fatal(http.ListenAndServe(":8080", nil))
@@ -102,6 +102,10 @@ func main() {
 
 func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Receviced a search reques")
+
+	w.Header().Set("Access­Control­Allow­Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access­Control­Allow­Headers", "Content­Type,Authorization")
 
 	lat, _ := strconv.ParseFloat(r.URL.Query().Get("lat"), 64)
 	lon, _ := strconv.ParseFloat(r.URL.Query().Get("lon"), 64)
@@ -153,15 +157,13 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 		return
 	}
-	w.Header().Set("Content­Type", "application/json")
-	w.Header().Set("Access­Control­Allow­Origin", "*")
 	w.Write(js)
 }
 
 func handlerPost(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content­Type", "application/json")
 	w.Header().Set("Access­Control­Allow­Origin", "*")
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access­Control­Allow­Headers", "Content­Type,Authorization")
 
 	user := r.Context().Value("user")

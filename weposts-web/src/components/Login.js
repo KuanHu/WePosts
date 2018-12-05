@@ -20,13 +20,11 @@ class NormalLoginForm extends React.Component {
                     data: JSON.stringify({
                         username: values.username,
                         password: values.password,
-                    })
+                    }),
                 }).then((res) => {
-                    message.success(res)
                     this.props.handleLogin(res)
                 }, (err) => {
                     message.error(err.responseText)
-                    this.props.handleLogin(err)
                 }).catch((err) => {
                     console.log(err)
                 })

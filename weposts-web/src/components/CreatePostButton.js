@@ -46,7 +46,7 @@ export class CreatePostButton extends React.Component {
                     contentType: false,
                     dataType: 'text',
                 }).then((res) => {
-                    this.props.loadNearbyPosts().then(() => {
+                    this.props.loadNearbyPosts(lat, lon).then(() => {
                         this.setState({confirmLoading: false, visible: false});
                     })
                 }, (err) => {
