@@ -103,9 +103,9 @@ func main() {
 func handlerSearch(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Receviced a search reques")
 
-	w.Header().Set("Access­Control­Allow­Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access­Control­Allow­Headers", "Content­Type,Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
 
 	lat, _ := strconv.ParseFloat(r.URL.Query().Get("lat"), 64)
 	lon, _ := strconv.ParseFloat(r.URL.Query().Get("lon"), 64)
@@ -162,11 +162,21 @@ func handlerSearch(w http.ResponseWriter, r *http.Request) {
 
 func handlerPost(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Access­Control­Allow­Origin", "*")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
-	w.Header().Set("Access­Control­Allow­Headers", "Content­Type,Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+
+	if r.Method != "POST" {
+		return
+	}
 
 	user := r.Context().Value("user")
+	if user == nil {
+		m := fmt.Sprintf("Unable to find user in context")
+		fmt.Println(m)
+		http.Error(w, m, http.StatusBadRequest)
+		return
+	}
 	claims := user.(*jwt.Token).Claims
 	username := claims.(jwt.MapClaims)["username"]
 
@@ -189,7 +199,7 @@ func handlerPost(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 	id := uuid.New()
-	file, _, err := r.FormFile("image")
+	file, _ , err := r.FormFile("image")
 	if err != nil {
 		http.Error(w, "Image is not available", http.StatusInternalServerError)
 		fmt.Printf("Image is not available %v.\n", err)

@@ -4,6 +4,7 @@ import {GEO_OPTION, AUTH_REFLIX, API_ROOT, TOKEN_KEY, POS_KEY} from "../constant
 import $ from 'jquery'
 import {Gallery} from "./Gallery"
 import {CreatePostButton} from "./CreatePostButton"
+import {PostMap} from "./PostMap"
 
 const TabPane = Tabs.TabPane;
 
@@ -23,7 +24,7 @@ export class Home extends React.Component {
                 this.onFailedLoadGeoLocation,
                 GEO_OPTION);
         } else {
-
+            this.setState({error : 'Your broswer does not support geo location'})
         }
     }
 
@@ -65,10 +66,11 @@ export class Home extends React.Component {
         }
     }
 
-    loadNearbyPost = (lat, lon) => {
+    loadNearbyPost = (lat, lon, radius) => {
         this.setState({loadingPosts: true});
+        const range = radius ? radius : 200
         return $.ajax({
-            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}`,
+            url: `${API_ROOT}/search?lat=${lat}&lon=${lon}&range=${range}`,
             method: 'GET',
             headers: {
                 Authorization: `${AUTH_REFLIX} ${localStorage.getItem(TOKEN_KEY)}`,
@@ -98,7 +100,16 @@ export class Home extends React.Component {
                 <TabPane tab="Post" key="1">
                     {this.getGalleryPanelContent()}
                 </TabPane>
-                <TabPane tab="Map" key="2">Content of tab 2</TabPane>
+                <TabPane tab="Map" key="2">
+                    <PostMap
+                        posts={this.state.posts}
+                        loadNearbyPost={this.loadNearbyPost}
+                        googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyAhpFlRhPb_zZvDcCBc57hps3ZhME_4pBk&v=3.exp&libraries=geometry,drawing,places"
+                        loadingElement={<div style={{ height: `100%` }} />}
+                        containerElement={<div style={{ height: `400px` }} />}
+                        mapElement={<div style={{ height: `100%` }} />}
+                    />
+                </TabPane>
             </Tabs>
         );
     }

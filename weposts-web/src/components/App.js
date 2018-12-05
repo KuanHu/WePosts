@@ -19,6 +19,11 @@ class App extends Component {
         this.setState({isLoggedIn: false})
         localStorage.removeItem(TOKEN_KEY)
     }
+
+    // componentDidMount() {
+    //     window.onbeforeunload = this.handleLogout.bind(this);
+    // }
+
     render() {
       return (
         <div className="App">

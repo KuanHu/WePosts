@@ -2,7 +2,7 @@ import React from 'react'
 import { Modal, Button, message} from 'antd';
 import {CreatePostForm} from "./CreatePostForm"
 import $ from "jquery"
-import {API_ROOT, POS_KEY, AUTH_REFLIX, TOKEN_KEY} from "../constants"
+import {API_ROOT, POS_KEY, AUTH_REFLIX, TOKEN_KEY, LOC_SHAKE} from "../constants"
 
 
 export class CreatePostButton extends React.Component {
@@ -20,7 +20,8 @@ export class CreatePostButton extends React.Component {
     }
 
     handleOk = () => {
-        this.form.validateFields((err, values) => {
+        const form = this.form;
+        form.validateFields((err, values) => {
             if(!err) {
                 console.log(values);
 
@@ -30,29 +31,35 @@ export class CreatePostButton extends React.Component {
 
                 const {lat, lon} = JSON.parse(localStorage.getItem(POS_KEY));
                 const formData = new FormData();
-                formData.set('lat', lat)
-                formData.set('lon', lon)
+                formData.set('lat', lat + Math.random() * LOC_SHAKE * 2 - LOC_SHAKE);
+                formData.set('lon', lon + Math.random() * LOC_SHAKE * 2 - LOC_SHAKE);
 
-                formData.set('message', values.message)
-                formData.set('image', values.image[0])
+                formData.set('message', values.message);
+                formData.set('image', form.getFieldValue('image')[0].originFileObj);
+                console.log(values.image[0]);
                 $.ajax({
                     url: `${API_ROOT}/post`,
                     method: 'POST',
-                    data: formData,
                     headers: {
                         Authorization: `${AUTH_REFLIX} ${localStorage.getItem(TOKEN_KEY)}`,
                     },
+                    mimeType: "multipart/form-data",
                     processData: false,
                     contentType: false,
                     dataType: 'text',
+                    data: formData,
                 }).then((res) => {
-                    this.props.loadNearbyPosts(lat, lon).then(() => {
+                    this.form.resetFields()
+                    this.props.loadNearbyPost(lat, lon).then(() => {
                         this.setState({confirmLoading: false, visible: false});
                     })
                 }, (err) => {
+                    this.form.resetFields()
+                    this.setState({confirmLoading: false});
                     message.error(err.responseText)
                 }).catch((err) => {
                     console.log(err);
+                    this.setState({confirmLoading: false});
                 });
             }
         });
